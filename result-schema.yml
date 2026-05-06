@@ -1,0 +1,868 @@
+version: "1.0"
+agent_id: "ecc-estimating-agent"
+
+tables:
+  result_projects:
+    description: Canonical project records.
+    writable: true
+    write_mode: upsert
+    columns:
+      project_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      external_project_key:
+        type: string
+        max_length: 128
+      project_name:
+        type: string
+        required: true
+        max_length: 255
+      market:
+        type: string
+        max_length: 128
+      address:
+        type: text
+      trades:
+        type: jsonb
+        required: true
+      status:
+        type: string
+        required: true
+        max_length: 64
+      current_pipeline_run_id:
+        type: string
+      created_at:
+        type: datetime
+        required: true
+        auto_generate: true
+      updated_at:
+        type: datetime
+        required: true
+        auto_generate: true
+    conflict_columns:
+      - project_id
+    indexes:
+      - columns: [status, market]
+        name: idx_result_projects_status_market
+  result_inputs:
+    description: Source file and event inventory.
+    writable: true
+    write_mode: upsert
+    columns:
+      input_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      project_id:
+        type: uuid
+        required: true
+      source_system:
+        type: string
+        required: true
+        max_length: 64
+      input_type:
+        type: string
+        required: true
+        max_length: 64
+      uri:
+        type: text
+        required: true
+      file_name:
+        type: string
+        max_length: 255
+      content_hash:
+        type: string
+        max_length: 128
+      metadata:
+        type: jsonb
+      received_at:
+        type: datetime
+        required: true
+        auto_generate: true
+      created_at:
+        type: datetime
+        auto_generate: true
+      updated_at:
+        type: datetime
+        auto_generate: true
+    conflict_columns:
+      - input_id
+    indexes:
+      - columns: [project_id, source_system]
+        name: idx_result_inputs_project_source
+      - columns: [content_hash]
+        name: idx_result_inputs_hash
+  result_pipeline_runs:
+    description: "End-to-end pipeline runs."
+    writable: true
+    write_mode: insert
+    columns:
+      pipeline_run_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      project_id:
+        type: uuid
+        required: true
+      trigger_type:
+        type: string
+        required: true
+        max_length: 64
+      status:
+        type: string
+        required: true
+        max_length: 64
+      requested_by:
+        type: string
+        max_length: 255
+      pricing_config_id:
+        type: string
+      started_at:
+        type: datetime
+        required: true
+        auto_generate: true
+      completed_at:
+        type: datetime
+      summary:
+        type: text
+      created_at:
+        type: datetime
+        auto_generate: true
+      updated_at:
+        type: datetime
+        auto_generate: true
+    conflict_columns:
+      - pipeline_run_id
+    indexes:
+      - columns: [project_id, status]
+        name: idx_result_pipeline_runs_project_status
+  result_stage_runs:
+    description: Individual stage runs with rerun history.
+    writable: true
+    write_mode: insert
+    columns:
+      stage_run_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      pipeline_run_id:
+        type: string
+        required: true
+      project_id:
+        type: uuid
+        required: true
+      stage_number:
+        type: integer
+        required: true
+      stage_name:
+        type: string
+        required: true
+        max_length: 128
+      rerun_of_stage_run_id:
+        type: string
+      status:
+        type: string
+        required: true
+        max_length: 64
+      inputs_snapshot:
+        type: jsonb
+        required: true
+      outputs_summary:
+        type: jsonb
+      started_at:
+        type: datetime
+        required: true
+        auto_generate: true
+      completed_at:
+        type: datetime
+      created_at:
+        type: datetime
+        auto_generate: true
+      updated_at:
+        type: datetime
+        auto_generate: true
+    conflict_columns:
+      - stage_run_id
+    indexes:
+      - columns: [project_id, stage_number, status]
+        name: idx_result_stage_runs_project_stage
+  result_scope_items:
+    description: Structured scope/takeoff items.
+    writable: true
+    write_mode: upsert
+    columns:
+      scope_item_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      project_id:
+        type: uuid
+        required: true
+      pipeline_run_id:
+        type: string
+      stage_run_id:
+        type: string
+      trade:
+        type: string
+        required: true
+        max_length: 64
+      category:
+        type: string
+        max_length: 96
+      description:
+        type: text
+        required: true
+      quantity:
+        type: float
+      unit:
+        type: string
+        max_length: 32
+      confidence:
+        type: float
+      source_refs:
+        type: jsonb
+      metadata:
+        type: jsonb
+      created_at:
+        type: datetime
+        auto_generate: true
+      updated_at:
+        type: datetime
+        auto_generate: true
+    conflict_columns:
+      - scope_item_id
+    indexes:
+      - columns: [project_id, trade]
+        name: idx_result_scope_items_project_trade
+  result_evidence_refs:
+    description: Evidence source anchors.
+    writable: true
+    write_mode: upsert
+    columns:
+      evidence_ref_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      project_id:
+        type: uuid
+        required: true
+      input_id:
+        type: uuid
+      source_system:
+        type: string
+        required: true
+        max_length: 64
+      source_ref:
+        type: jsonb
+        required: true
+      metadata:
+        type: jsonb
+      created_at:
+        type: datetime
+        auto_generate: true
+      updated_at:
+        type: datetime
+        auto_generate: true
+    conflict_columns:
+      - evidence_ref_id
+    indexes:
+      - columns: [project_id, input_id]
+        name: idx_result_evidence_project_input
+  result_estimate_lines:
+    description: Normalized estimate lines with source/pricing lineage.
+    writable: true
+    write_mode: upsert
+    columns:
+      estimate_line_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      project_id:
+        type: uuid
+        required: true
+      pipeline_run_id:
+        type: string
+        required: true
+      stage_run_id:
+        type: string
+      trade:
+        type: string
+        required: true
+        max_length: 64
+      sheet_tab:
+        type: string
+        required: true
+        max_length: 128
+      line_code:
+        type: string
+        max_length: 128
+      description:
+        type: text
+        required: true
+      quantity:
+        type: float
+        required: true
+      unit:
+        type: string
+        required: true
+        max_length: 32
+      unit_price:
+        type: float
+      extended_price:
+        type: float
+      source_refs:
+        type: jsonb
+      pricing_config_id:
+        type: string
+      metadata:
+        type: jsonb
+      created_at:
+        type: datetime
+        auto_generate: true
+      updated_at:
+        type: datetime
+        auto_generate: true
+    conflict_columns:
+      - estimate_line_id
+    indexes:
+      - columns: [project_id, pipeline_run_id]
+        name: idx_result_estimate_lines_project_run
+      - columns: [trade, sheet_tab]
+        name: idx_result_estimate_lines_trade_tab
+  result_qa_findings:
+    description: QA checks and warnings.
+    writable: true
+    write_mode: upsert
+    columns:
+      qa_finding_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      project_id:
+        type: uuid
+        required: true
+      stage_run_id:
+        type: string
+      check_name:
+        type: string
+        required: true
+        max_length: 128
+      result:
+        type: string
+        required: true
+        max_length: 32
+      severity:
+        type: string
+        max_length: 32
+      details:
+        type: text
+      message:
+        type: text
+      required_action:
+        type: text
+      metadata:
+        type: jsonb
+      created_at:
+        type: datetime
+        auto_generate: true
+      updated_at:
+        type: datetime
+        auto_generate: true
+    conflict_columns:
+      - qa_finding_id
+    indexes:
+      - columns: [project_id, result]
+        name: idx_result_qa_project_result
+  result_rfis:
+    description: RFIs and answers.
+    writable: true
+    write_mode: upsert
+    columns:
+      rfi_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      project_id:
+        type: uuid
+        required: true
+      stage_run_id:
+        type: string
+      question:
+        type: text
+        required: true
+      reason:
+        type: text
+      priority:
+        type: string
+        required: true
+        max_length: 32
+      status:
+        type: string
+        required: true
+        max_length: 64
+      answer:
+        type: text
+      due_at:
+        type: datetime
+      created_at:
+        type: datetime
+        required: true
+        auto_generate: true
+      updated_at:
+        type: datetime
+        auto_generate: true
+    conflict_columns:
+      - rfi_id
+    indexes:
+      - columns: [project_id, status]
+        name: idx_result_rfis_project_status
+  result_assumptions:
+    description: Assumptions and exclusions.
+    writable: true
+    write_mode: upsert
+    columns:
+      assumption_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      project_id:
+        type: uuid
+        required: true
+      stage_run_id:
+        type: string
+      category:
+        type: string
+        required: true
+        max_length: 64
+      statement:
+        type: text
+      text:
+        type: text
+      impact:
+        type: text
+      status:
+        type: string
+        required: true
+        max_length: 64
+      metadata:
+        type: jsonb
+      created_at:
+        type: datetime
+        auto_generate: true
+      updated_at:
+        type: datetime
+        auto_generate: true
+    conflict_columns:
+      - assumption_id
+    indexes:
+      - columns: [project_id, category]
+        name: idx_result_assumptions_project_category
+  result_risks:
+    description: "Risks, alternates, and impacts."
+    writable: true
+    write_mode: upsert
+    columns:
+      risk_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      project_id:
+        type: uuid
+        required: true
+      stage_run_id:
+        type: string
+      risk_type:
+        type: string
+        required: true
+        max_length: 64
+      description:
+        type: text
+        required: true
+      severity:
+        type: string
+        required: true
+        max_length: 32
+      estimated_impact:
+        type: text
+      impact:
+        type: text
+      mitigation:
+        type: text
+      metadata:
+        type: jsonb
+      created_at:
+        type: datetime
+        auto_generate: true
+      updated_at:
+        type: datetime
+        auto_generate: true
+    conflict_columns:
+      - risk_id
+    indexes:
+      - columns: [project_id, severity]
+        name: idx_result_risks_project_severity
+  result_artifacts:
+    description: Generated artifacts and SharePoint outputs.
+    writable: true
+    write_mode: upsert
+    columns:
+      artifact_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      project_id:
+        type: uuid
+        required: true
+      pipeline_run_id:
+        type: string
+      stage_run_id:
+        type: string
+      artifact_type:
+        type: string
+        required: true
+        max_length: 96
+      uri:
+        type: text
+        required: true
+      version:
+        type: integer
+        required: true
+      status:
+        type: string
+        required: true
+        max_length: 64
+      metadata:
+        type: jsonb
+      created_at:
+        type: datetime
+        required: true
+        auto_generate: true
+      updated_at:
+        type: datetime
+        auto_generate: true
+    conflict_columns:
+      - artifact_id
+    indexes:
+      - columns: [project_id, artifact_type]
+        name: idx_result_artifacts_project_type
+  result_revision_diffs:
+    description: Rerun and artifact comparison diffs.
+    writable: true
+    write_mode: insert
+    columns:
+      revision_diff_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      project_id:
+        type: uuid
+        required: true
+      base_entity_id:
+        type: string
+      revised_entity_id:
+        type: string
+      base_pipeline_run_id:
+        type: string
+      revised_pipeline_run_id:
+        type: string
+      base_stage_run_id:
+        type: string
+      revised_stage_run_id:
+        type: string
+      diff_type:
+        type: string
+        required: true
+        max_length: 64
+      summary:
+        type: text
+        required: true
+      diff_json:
+        type: jsonb
+      details:
+        type: jsonb
+      created_at:
+        type: datetime
+        required: true
+        auto_generate: true
+    conflict_columns:
+      - revision_diff_id
+    indexes:
+      - columns: [project_id, diff_type]
+        name: idx_result_diffs_project_type
+  result_reviewer_feedback:
+    description: "Reviewer decisions, corrections, and calibration notes."
+    writable: true
+    write_mode: insert
+    columns:
+      feedback_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      project_id:
+        type: uuid
+        required: true
+      reviewer:
+        type: string
+        max_length: 255
+      target_type:
+        type: string
+        required: true
+        max_length: 64
+      target_id:
+        type: string
+      feedback_text:
+        type: text
+      comment:
+        type: text
+      decision:
+        type: string
+        max_length: 64
+      metadata:
+        type: jsonb
+      created_at:
+        type: datetime
+        required: true
+        auto_generate: true
+    conflict_columns:
+      - feedback_id
+    indexes:
+      - columns: [project_id, decision]
+        name: idx_result_feedback_project_decision
+  result_memories_rules:
+    description: "Curated memories/rules only, no model training."
+    writable: true
+    write_mode: upsert
+    columns:
+      memory_rule_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      rule_key:
+        type: string
+        required: true
+        max_length: 128
+      trade:
+        type: string
+        max_length: 64
+      market:
+        type: string
+        max_length: 128
+      rule_type:
+        type: string
+        max_length: 64
+      content:
+        type: jsonb
+        required: true
+      source:
+        type: string
+        required: true
+        max_length: 128
+      status:
+        type: string
+        required: true
+        max_length: 64
+      effective_at:
+        type: datetime
+      created_at:
+        type: datetime
+        auto_generate: true
+      updated_at:
+        type: datetime
+        required: true
+        auto_generate: true
+    conflict_columns:
+      - memory_rule_id
+    indexes:
+      - columns: [trade, market, status]
+        name: idx_result_memories_trade_market_status
+  result_pricing_rates_config:
+    description: Pricing/rates/taxes/markup/workbook configuration versions.
+    writable: true
+    write_mode: upsert
+    columns:
+      pricing_config_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      config_key:
+        type: string
+        required: true
+        max_length: 128
+      market:
+        type: string
+        max_length: 128
+      trade:
+        type: string
+        max_length: 64
+      workbook_uri:
+        type: text
+      effective_date:
+        type: datetime
+      config_json:
+        type: jsonb
+        required: true
+        description: "Workbook tabs, formulas, ranges, rates, taxes, markup, factors, mappings, and validation checks."
+      status:
+        type: string
+        required: true
+        max_length: 64
+      created_at:
+        type: datetime
+        auto_generate: true
+      updated_at:
+        type: datetime
+        required: true
+        auto_generate: true
+    conflict_columns:
+      - pricing_config_id
+    indexes:
+      - columns: [config_key, status]
+        name: idx_result_pricing_config_status
+  result_connectors:
+    description: "Connector status and non-secret metadata."
+    writable: true
+    write_mode: upsert
+    columns:
+      connector_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      connector_name:
+        type: string
+        required: true
+        max_length: 128
+      status:
+        type: string
+        required: true
+        max_length: 64
+      auth_method:
+        type: string
+        max_length: 128
+      config_metadata:
+        type: jsonb
+      metadata:
+        type: jsonb
+      last_checked_at:
+        type: datetime
+      created_at:
+        type: datetime
+        auto_generate: true
+      updated_at:
+        type: datetime
+        required: true
+        auto_generate: true
+    conflict_columns:
+      - connector_id
+    indexes:
+      - columns: [connector_name, status]
+        name: idx_result_connectors_name_status
+  result_audit_logs:
+    description: Immutable material action audit logs.
+    writable: true
+    write_mode: insert
+    columns:
+      audit_log_id:
+        type: uuid
+        primary_key: true
+        required: true
+        auto_generate: true
+      run_id:
+        type: string
+        required: true
+      project_id:
+        type: uuid
+      actor:
+        type: string
+        required: true
+        max_length: 255
+      action:
+        type: string
+        required: true
+        max_length: 128
+      entity_type:
+        type: string
+        max_length: 96
+      entity_id:
+        type: string
+      details:
+        type: jsonb
+      created_at:
+        type: datetime
+        required: true
+        auto_generate: true
+    conflict_columns:
+      - audit_log_id
+    indexes:
+      - columns: [project_id, action]
+        name: idx_result_audit_project_action
+      - columns: [entity_type, created_at]
+        name: idx_result_audit_entity_created

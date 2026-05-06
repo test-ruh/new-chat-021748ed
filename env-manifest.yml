@@ -1,0 +1,207 @@
+infrastructure:
+  - key: PG_CONNECTION_STRING
+    label: PostgreSQL connection string
+    required: true
+    secret: true
+  - key: DATABASE_URL
+    label: Database URL
+    required: true
+    secret: true
+  - key: ORG_ID
+    label: Organization ID
+    required: true
+    secret: false
+  - key: AGENT_ID
+    label: Agent ID
+    required: true
+    secret: false
+  - key: RUN_ID
+    label: Runtime run ID
+    required: false
+    secret: false
+  - key: OPENCLAW_BASE_URL
+    label: OpenClaw base URL
+    required: true
+    secret: false
+  - key: OPENCLAW_API_KEY
+    label: OpenClaw API key
+    required: false
+    secret: true
+  - key: DEFAULT_TIMEZONE
+    label: Default timezone
+    required: false
+    secret: false
+  - key: MAX_PIPELINE_SECONDS
+    label: Maximum pipeline seconds
+    required: false
+    secret: false
+  - key: MAX_STAGE_RETRIES
+    label: Maximum stage retries
+    required: false
+    secret: false
+  - key: RETENTION_DAYS_PROJECT_DATA
+    label: Retention days for project data
+    required: false
+    secret: false
+connector:
+  - key: GITHUB_TOKEN
+    label: GitHub token
+    required: false
+    secret: true
+  - key: GITHUB_OWNER
+    label: GitHub owner
+    required: false
+    secret: false
+  - key: AGENT_REPO_NAME
+    label: Agent repo name
+    required: false
+    secret: false
+  - key: SHAREPOINT_CLIENT_ID
+    label: SharePoint client ID
+    required: true
+    secret: false
+  - key: SHAREPOINT_CLIENT_SECRET
+    label: SharePoint client secret
+    required: true
+    secret: true
+  - key: SHAREPOINT_TENANT_ID
+    label: SharePoint tenant ID
+    required: true
+    secret: false
+  - key: SHAREPOINT_SITE_ID
+    label: SharePoint site ID
+    required: true
+    secret: false
+  - key: SHAREPOINT_ROOT_FOLDER_ID
+    label: SharePoint root folder ID
+    required: true
+    secret: false
+  - key: SHAREPOINT_INPUT_FOLDER_NAME
+    label: SharePoint input folder name
+    required: false
+    secret: false
+  - key: SHAREPOINT_OUTPUT_FOLDER_NAME
+    label: SharePoint output folder name
+    required: false
+    secret: false
+  - key: GRAPH_WEBHOOK_CLIENT_STATE
+    label: Graph webhook client state
+    required: true
+    secret: true
+  - key: COMPANYCAM_API_KEY
+    label: Company Cam API key
+    required: true
+    secret: true
+  - key: COMPANYCAM_WEBHOOK_SECRET
+    label: Company Cam webhook secret
+    required: true
+    secret: true
+  - key: EAGLEVIEW_API_KEY
+    label: EagleView API key
+    required: false
+    secret: true
+  - key: EAGLEVIEW_BASE_URL
+    label: EagleView base URL
+    required: false
+    secret: false
+  - key: GOOGLE_MAPS_API_KEY
+    label: Google Maps API key
+    required: true
+    secret: true
+  - key: NETSUITE_ACCOUNT_ID
+    label: NetSuite account ID
+    required: false
+    secret: false
+  - key: NETSUITE_CLIENT_ID
+    label: NetSuite client ID
+    required: false
+    secret: false
+  - key: NETSUITE_CLIENT_SECRET
+    label: NetSuite client secret
+    required: false
+    secret: true
+  - key: NETSUITE_TOKEN_ID
+    label: NetSuite token ID
+    required: false
+    secret: true
+  - key: NETSUITE_TOKEN_SECRET
+    label: NetSuite token secret
+    required: false
+    secret: true
+  - key: NETSUITE_BASE_URL
+    label: NetSuite base URL
+    required: false
+    secret: false
+  - key: BLUECOLLAR_API_KEY
+    label: BlueCollar API key
+    required: false
+    secret: true
+  - key: BLUECOLLAR_BASE_URL
+    label: BlueCollar base URL
+    required: false
+    secret: false
+  - key: ANTHROPIC_API_KEY
+    label: Anthropic API key
+    required: true
+    secret: true
+  - key: OPENAI_API_KEY
+    label: OpenAI API key
+    required: true
+    secret: true
+  - key: PRIMARY_MODEL_PROVIDER
+    label: Primary model provider
+    required: false
+    secret: false
+  - key: FAST_MODEL_NAME
+    label: Fast model name
+    required: false
+    secret: false
+  - key: DEEP_MODEL_NAME
+    label: Deep model name
+    required: false
+    secret: false
+  - key: PRICING_CONFIG_ID
+    label: Pricing config ID
+    required: false
+    secret: false
+channel:
+  - key: OUTLOOK_CLIENT_ID
+    label: Outlook client ID
+    required: false
+    secret: false
+  - key: OUTLOOK_CLIENT_SECRET
+    label: Outlook client secret
+    required: false
+    secret: true
+  - key: OUTLOOK_TENANT_ID
+    label: Outlook tenant ID
+    required: false
+    secret: false
+  - key: SMTP_HOST
+    label: SMTP host
+    required: false
+    secret: false
+  - key: SMTP_PORT
+    label: SMTP port
+    required: false
+    secret: false
+  - key: SMTP_USERNAME
+    label: SMTP username
+    required: false
+    secret: true
+  - key: SMTP_PASSWORD
+    label: SMTP password
+    required: false
+    secret: true
+  - key: NOTIFICATION_FROM_EMAIL
+    label: Notification from email
+    required: false
+    secret: false
+  - key: REVIEWER_DISTRIBUTION_LIST
+    label: Reviewer distribution list
+    required: false
+    secret: false
+  - key: ESTIMATOR_DISTRIBUTION_LIST
+    label: Estimator distribution list
+    required: false
+    secret: false

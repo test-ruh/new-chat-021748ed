@@ -1,0 +1,16 @@
+{
+  "name": "companycam-delta-reconcile",
+  "enabled": true,
+  "schedule": {
+    "kind": "cron",
+    "expr": "*/30 * * * *",
+    "tz": "UTC"
+  },
+  "sessionTarget": "isolated",
+  "wakeMode": "now",
+  "payload": {
+    "kind": "agentTurn",
+    "message": "Run the main workflow to reconcile Company Cam projects/photos/tags/comments in case webhook delivery was missed.",
+    "timeoutSeconds": 600
+  }
+}

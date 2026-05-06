@@ -1,0 +1,48 @@
+version: 1
+name: main
+steps:
+  - id: data-writer
+    type: skill
+    skill: data-writer
+  - id: ingest_project_inputs
+    type: skill
+    skill: ingest-project-inputs
+  - id: validate_intake
+    type: skill
+    skill: validate-intake
+    depends_on: [ingest_project_inputs]
+  - id: intake_blocker_notice
+    type: native-tool
+    tool: message
+    depends_on: [validate_intake]
+  - id: extract_scope_evidence
+    type: skill
+    skill: extract-scope-evidence
+    depends_on: [validate_intake]
+  - id: apply_pricing_rules
+    type: skill
+    skill: apply-pricing-rules
+    depends_on: [extract_scope_evidence]
+  - id: generate_qa_rfi_risk_package
+    type: skill
+    skill: generate-qa-rfi-risk-package
+    depends_on: [apply_pricing_rules]
+  - id: qa_blocker_notice
+    type: native-tool
+    tool: message
+    depends_on: [generate_qa_rfi_risk_package]
+  - id: assemble_estimate_artifacts
+    type: skill
+    skill: assemble-estimate-artifacts
+    depends_on: [generate_qa_rfi_risk_package]
+  - id: completion_notice
+    type: native-tool
+    tool: message
+    depends_on: [assemble_estimate_artifacts]
+  - id: manage_rerun_and_diff
+    type: skill
+    skill: manage-rerun-and-diff
+  - id: curate_feedback_memory
+    type: skill
+    skill: curate-feedback-memory
+    depends_on: [manage_rerun_and_diff]

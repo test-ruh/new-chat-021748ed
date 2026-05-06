@@ -1,0 +1,16 @@
+{
+  "name": "sharepoint-delta-watch",
+  "enabled": true,
+  "schedule": {
+    "kind": "cron",
+    "expr": "*/15 * * * *",
+    "tz": "UTC"
+  },
+  "sessionTarget": "isolated",
+  "wakeMode": "now",
+  "payload": {
+    "kind": "agentTurn",
+    "message": "Run the main workflow to poll Microsoft Graph delta for configured SharePoint agent-input folders.",
+    "timeoutSeconds": 600
+  }
+}

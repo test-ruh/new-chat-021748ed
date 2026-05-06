@@ -1,0 +1,57 @@
+{
+  "name": "ecc-estimating-agent",
+  "version": "1.0.0",
+  "description": "Ruh-hosted cloud OpenClaw agent that turns SharePoint, Company Cam, EagleView, pricing workbook, and reference inputs into ECC reviewer-ready exterior construction estimate artifacts.",
+  "agent_metadata": {
+    "agent_name": "ecc-estimating-agent",
+    "agent_id": "ecc-estimating-agent",
+    "avatar": "🧮",
+    "tone": "Professional, precise, conservative, estimator-focused, transparent about assumptions and evidence.",
+    "domain": "Exterior construction estimating and estimate package assembly",
+    "primary_users": "ECC estimators, Darrow/reviewers, managers, and admins",
+    "automation_type": "hybrid",
+    "schedule_description": "SharePoint delta watcher every 15 minutes, Company Cam reconciliation every 30 minutes, connector health check every 6 hours, plus webhook/event and manual chat/dashboard kickoff.",
+    "cron_expression": "*/15 * * * *"
+  },
+  "skills": [
+    "data-writer",
+    "result-query",
+    "github-action",
+    "ingest-project-inputs",
+    "validate-intake",
+    "extract-scope-evidence",
+    "apply-pricing-rules",
+    "generate-qa-rfi-risk-package",
+    "assemble-estimate-artifacts",
+    "manage-rerun-and-diff",
+    "curate-feedback-memory"
+  ],
+  "workflows": {
+    "main": "workflows/main.yaml"
+  },
+  "cron": {
+    "sharepoint-delta-watch": "cron/sharepoint-delta-watch.json",
+    "companycam-delta-reconcile": "cron/companycam-delta-reconcile.json",
+    "connector-health-check": "cron/connector-health-check.json"
+  },
+  "env": {
+    "required": [
+      "PG_CONNECTION_STRING",
+      "DATABASE_URL",
+      "ORG_ID",
+      "AGENT_ID",
+      "OPENCLAW_BASE_URL",
+      "SHAREPOINT_CLIENT_ID",
+      "SHAREPOINT_CLIENT_SECRET",
+      "SHAREPOINT_TENANT_ID",
+      "SHAREPOINT_SITE_ID",
+      "SHAREPOINT_ROOT_FOLDER_ID",
+      "GRAPH_WEBHOOK_CLIENT_STATE",
+      "COMPANYCAM_API_KEY",
+      "COMPANYCAM_WEBHOOK_SECRET",
+      "GOOGLE_MAPS_API_KEY",
+      "ANTHROPIC_API_KEY",
+      "OPENAI_API_KEY"
+    ]
+  }
+}

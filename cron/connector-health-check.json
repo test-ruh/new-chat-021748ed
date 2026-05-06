@@ -1,0 +1,16 @@
+{
+  "name": "connector-health-check",
+  "enabled": true,
+  "schedule": {
+    "kind": "cron",
+    "expr": "0 */6 * * *",
+    "tz": "UTC"
+  },
+  "sessionTarget": "isolated",
+  "wakeMode": "now",
+  "payload": {
+    "kind": "agentTurn",
+    "message": "Run the main workflow to check connector health and update non-secret connector status metadata.",
+    "timeoutSeconds": 300
+  }
+}
